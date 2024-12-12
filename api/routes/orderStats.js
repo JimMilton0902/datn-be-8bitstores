@@ -7,7 +7,7 @@ router.get("/", async (req, res) => {
     const result = await Payment.aggregate([
       {
         $match: {
-          status: "approved",  // Lọc các đơn hàng đã duyệt
+          received: true, // Lọc các đơn hàng đã hoàn tất
         },
       },
       {
@@ -26,32 +26,30 @@ router.get("/", async (req, res) => {
       },
       {
         $group: {
-          _id: "$menuItemDetails.category",
+          _id: null, // Không phân nhóm theo danh mục nếu muốn tổng revenue toàn bộ
           quantity: { $sum: "$quantity" },
-          revenue: { $sum: "$price" },
+          revenue: { $sum: "$cartTotals" }, // Tính tổng từ trường cartTotals
         },
       },
       {
         $project: {
           _id: 0,
-          category: "$_id",
-          quantity: "$quantity",
-          revenue: "$revenue",
+          totalQuantity: "$quantity",
+          totalRevenue: "$revenue",
         },
       },
     ]);
 
     if (result.length === 0) {
-      throw new Error("Không tìm thấy dữ liệu trong orderstats");
+      throw new Error("Không tìm thấy dữ liệu đơn hàng hoàn tất");
     }
 
-    res.json(result);
+    res.json(result[0]);
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).json({ error: error.message });
   }
 });
-
 
 
 
