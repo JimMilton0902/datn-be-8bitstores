@@ -1,4 +1,4 @@
-const Categories = require("../models/categories");
+const Categories = require("../models/Category");
 
 // Lấy tất cả categories
 const getAllCategories = async (req, res) => {
