@@ -43,24 +43,30 @@ app.post("/jwt", async (req, res) => {
   }
 });
 
-//dung thah toan stripe
 app.post("/create-payment-intent", async (req, res) => {
-  //lay ra price nhe
   const { cartTotals } = req.body;
-  //do cent la 1000 con dolar 100 nen phai *100 ra dolar
-  const amount = cartTotals * 100;
 
-  // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: amount,
-    currency: "usd",
-    payment_method_types: ["card"],
-  });
+  // Kiểm tra số tiền hợp lệ
+  if (!cartTotals || cartTotals <= 0 || cartTotals > 99999999) {
+      return res.status(400).send({ error: "Số tiền không hợp lệ hoặc quá lớn" });
+  }
 
-  res.send({
-    clientSecret: paymentIntent.client_secret,
-  });
+  try {
+      const paymentIntent = await stripe.paymentIntents.create({
+          amount: cartTotals, // Nếu dùng "vnd", không cần nhân 100
+          currency: "vnd",    // Đặt loại tiền tệ là VND
+          payment_method_types: ["card"],
+      });
+
+      res.send({
+          clientSecret: paymentIntent.client_secret,
+      });
+  } catch (error) {
+      console.error("Lỗi khi tạo PaymentIntent:", error);
+      res.status(500).send({ error: "Không thể tạo PaymentIntent" });
+  }
 });
+
 
 const menuRoutes = require("./api/routes/MenuRoutes");
 const cartRoutes = require("./api/routes/cartRoutes");
