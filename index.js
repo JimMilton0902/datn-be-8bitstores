@@ -42,31 +42,33 @@ app.post("/jwt", async (req, res) => {
     res.status(500).send("Lỗi tạo mã thông báo token");
   }
 });
-
 app.post("/create-payment-intent", async (req, res) => {
-  const { cartTotals } = req.body;
+  const { cartTotals } = req.body; // Số tiền VNĐ từ frontend
+  const exchangeRate = 25405; // Tỷ giá VNĐ/USD (bạn có thể lấy từ API bên ngoài)
 
-  // Kiểm tra số tiền hợp lệ
-  if (!cartTotals || cartTotals <= 0 || cartTotals > 99999999) {
-      return res.status(400).send({ error: "Số tiền không hợp lệ hoặc quá lớn" });
+  if (!cartTotals || cartTotals <= 0) {
+    return res.status(400).send({ error: "Số tiền không hợp lệ." });
   }
 
   try {
-      const paymentIntent = await stripe.paymentIntents.create({
-          amount: cartTotals, // Nếu dùng "vnd", không cần nhân 100
-          currency: "vnd",    // Đặt loại tiền tệ là VND
-          payment_method_types: ["card"],
-      });
+    // Chuyển đổi từ VNĐ sang USD (sang đơn vị cents)
+    const amountInUSD = Math.round((cartTotals / exchangeRate) ); // Làm tròn để tránh lỗi số học
 
-      res.send({
-          clientSecret: paymentIntent.client_secret,
-      });
+    // Tạo PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountInUSD, // Số tiền USD (cents)
+      currency: "usd", // Loại tiền tệ
+      payment_method_types: ["card"],
+    });
+
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+    });
   } catch (error) {
-      console.error("Lỗi khi tạo PaymentIntent:", error);
-      res.status(500).send({ error: "Không thể tạo PaymentIntent" });
+    console.error("Lỗi khi tạo PaymentIntent:", error);
+    res.status(500).send({ error: "Không thể tạo PaymentIntent" });
   }
 });
-
 
 const menuRoutes = require("./api/routes/MenuRoutes");
 const cartRoutes = require("./api/routes/cartRoutes");
@@ -79,7 +81,6 @@ const voucherRoutes = require("./api/routes/voucherRoutes");
 const categoriesRouter = require("./api/routes/categoriesRoutes");
 const voucherRouter = require("./api/routes/voucherRoutes");
 
-
 app.use("/menu", menuRoutes);
 app.use("/cart", cartRoutes);
 app.use("/users", userRouter);
@@ -90,7 +91,6 @@ app.use("/blog", blogRoutes);
 app.use("/voucher", voucherRoutes);
 app.use("/categories", categoriesRouter);
 app.use("/vouchers", voucherRouter);
-
 
 app.get("/", async (req, res) => {
   res.send("hello worlds");
