@@ -52,7 +52,7 @@ app.post("/create-payment-intent", async (req, res) => {
 
   try {
     // Chuyển đổi từ VNĐ sang USD (sang đơn vị cents)
-    const amountInUSD = ((cartTotals / exchangeRate) * 100); // Làm tròn để tránh lỗi số học
+    const amountInUSD = Math.round((cartTotals / exchangeRate)); // Làm tròn để tránh lỗi số học
 
     // Tạo PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
