@@ -52,7 +52,7 @@ app.post("/create-payment-intent", async (req, res) => {
     // Tạo PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInUSD, // Số tiền USD (cents)
-      currency: "vi", // Loại tiền tệ
+      currency: "vnd", // Loại tiền tệ
       payment_method_types: ["card"],
     });
 
