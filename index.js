@@ -48,12 +48,12 @@ app.post("/create-payment-intent", async (req, res) => {
   //lay ra price nhe
   const { cartTotals } = req.body;
   //do cent la 1000 con dolar 100 nen phai *100 ra dolar
-  const amount = cartTotals * 100;
+  const amount = cartTotals;
 
   // Create a PaymentIntent with the order amount and currency
   const paymentIntent = await stripe.paymentIntents.create({
     amount: amount,
-    currency: "usd",
+    currency: "vnd",
     payment_method_types: ["card"],
   });
 
