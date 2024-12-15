@@ -44,20 +44,15 @@ app.post("/jwt", async (req, res) => {
 });
 app.post("/create-payment-intent", async (req, res) => {
   const { cartTotals } = req.body; // Số tiền VNĐ từ frontend
-  const exchangeRate = 25405; // Tỷ giá VNĐ/USD (bạn có thể lấy từ API bên ngoài)
-
   if (!cartTotals || cartTotals <= 0) {
     return res.status(400).send({ error: "Số tiền không hợp lệ." });
   }
 
   try {
-    // Chuyển đổi từ VNĐ sang USD (sang đơn vị cents)
-    const amountInUSD = Math.round((cartTotals / exchangeRate)); // Làm tròn để tránh lỗi số học
-
     // Tạo PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInUSD, // Số tiền USD (cents)
-      currency: "usd", // Loại tiền tệ
+      currency: "vi", // Loại tiền tệ
       payment_method_types: ["card"],
     });
 
