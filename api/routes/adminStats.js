@@ -6,7 +6,7 @@ const verifyToken = require("../middleware/verifyToken");
 const verifyAdmin = require("../middleware/verifyAdmin");
 
 const User = require("../models/User");
-const Menu = require("../models/Menu");
+const Menu = require("../models/Product");
 const Payment = require("../models/Bill");
 
 router.get("/", verifyToken, verifyAdmin, async (req, res) => {

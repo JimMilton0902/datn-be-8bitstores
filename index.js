@@ -65,7 +65,7 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-const menuRoutes = require("./api/routes/MenuRoutes");
+const menuRoutes = require("./api/routes/productRoutes");
 const cartRoutes = require("./api/routes/cartRoutes");
 const userRouter = require("./api/routes/userRouter");
 const paymentRoutes = require("./api/routes/billRoutes");

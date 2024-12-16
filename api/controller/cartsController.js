@@ -4,7 +4,7 @@ const getCartByEmail = async (req, res) => {
   try {
     const email = req.query.email;
     const query = { email: email };
-    const result = await Carts.find(query).sort({ createdAt: -1 }); // Corrected field name to 'createdAt'
+    const result = await Carts.find(query).sort({ createdAt: -1 }).populate('productItemId'); // Corrected field name to 'createdAt'
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -14,11 +14,11 @@ const getCartByEmail = async (req, res) => {
 
 //add to cart
 const addToCart = async (req, res) => {
-  const { menuItemId, name, recipe, image, price, email, quantity } = req.body;
+  const { productItemId, name, recipe, image, price, email, quantity } = req.body;
 
   try {
     // Kiểm tra sản phẩm đã tồn tại
-    const existingCartItem = await Carts.findOne({ email, menuItemId });
+    const existingCartItem = await Carts.findOne({ email, productItemId });
     if (existingCartItem) {
       return res
         .status(400)
@@ -27,7 +27,7 @@ const addToCart = async (req, res) => {
 
     // Thêm sản phẩm mới vào giỏ hàng
     const cartItem = await Carts.create({
-      menuItemId,
+      productItemId,
       name,
       recipe,
       image,
@@ -62,11 +62,11 @@ const deleteCart = async (req, res) => {
 //update cart
 const updateCart = async (req, res) => {
   const cartId = req.params.id;
-  const { menuItemId, name, recipe, image, price, email, quantity } = req.body;
+  const { productItemId, name, recipe, image, price, email, quantity } = req.body;
   try {
     const updatedCart = await Carts.findByIdAndUpdate(
       cartId,
-      { menuItemId, name, recipe, image, price, email, quantity },
+      { productItemId, name, recipe, image, price, email, quantity },
       { new: true, runValidators: true }
     );
 
