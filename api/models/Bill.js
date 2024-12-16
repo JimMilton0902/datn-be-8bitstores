@@ -9,7 +9,13 @@ const paymentSchema = new Schema(
     quantity: Number,
     status: String,
     cartItem: Array,
-    menuItems: Array,
+    productItemId: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
+      },
+    ],
     itemName: Array,
     cartTotals: Number,
     address: {
