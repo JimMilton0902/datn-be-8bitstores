@@ -3,26 +3,37 @@ const { Schema } = mongoose;
 
 const cartSchema = new Schema(
   {
-    menuItemId: String,
+    productItemId: {
+      type: Schema.Types.ObjectId, // Referencing the Menu schema
+      ref: "Product",
+      required: true,
+    },
     name: {
       type: String,
       trim: true,
-      require: true,
+      required: true,
       minlength: 3,
     },
     recipe: String,
     image: String,
-    price: Number,
-    quantity: Number,
+    price: {
+      type: Number,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
     email: {
       type: String,
-      true: true,
-      require: true,
+      required: true,
+      trim: true,
     },
   },
   { timestamps: true }
 );
 
-const Carts = mongoose.model("cart", cartSchema);
+const Cart = mongoose.model("Cart", cartSchema);
 
-module.exports = Carts;
+module.exports = Cart;
