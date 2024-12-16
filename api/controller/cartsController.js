@@ -17,15 +17,20 @@ const addToCart = async (req, res) => {
   const { productItemId, name, recipe, image, price, email, quantity } = req.body;
 
   try {
-    // Kiểm tra sản phẩm đã tồn tại
+    // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng
     const existingCartItem = await Carts.findOne({ email, productItemId });
+
     if (existingCartItem) {
-      return res
-        .status(400)
-        .json({ message: "Sản phẩm này đã có trong giỏ hàng của bạn rồi." });
+      // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng lên 1
+      existingCartItem.quantity += quantity;
+
+      // Lưu lại giỏ hàng với số lượng đã được cập nhật
+      const updatedCartItem = await existingCartItem.save();
+
+      return res.status(200).json(updatedCartItem);
     }
 
-    // Thêm sản phẩm mới vào giỏ hàng
+    // Nếu sản phẩm chưa có trong giỏ hàng, thêm sản phẩm mới vào
     const cartItem = await Carts.create({
       productItemId,
       name,
@@ -41,6 +46,7 @@ const addToCart = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 //delete cart
 const deleteCart = async (req, res) => {
