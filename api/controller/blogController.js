@@ -50,9 +50,31 @@ const deletedBlogs = async (req, res) => {
   }
 };
 
+const updateBlog = async (req, res) => {
+  const blogId = req.params.id;
+  const { image, title, author, content } = req.body;
+
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      blogId,
+      { image, title, author, content },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedBlog) {
+      return res.status(404).json({ message: "Không tìm thấy category" });
+    }
+
+    res.status(200).json(updatedBlog);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllBlog,
   postBlogs,
   singleBlogs,
   deletedBlogs,
+  updateBlog,
 };
