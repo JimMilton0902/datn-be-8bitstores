@@ -44,25 +44,25 @@ const deleteUser = async (req, res) => {
   }
 };
 
-//get admin
-const getAdmin = async (req, res) => {
-  const email = req.params.email;
-  const params = { email: email };
-  try {
-    const user = await User.findOne(params);
+  //get admin
+  const getAdmin = async (req, res) => {
+    const email = req.params.email;
+    const params = { email: email };
+    try {
+      const user = await User.findOne(params);
 
-    if (email !== req.decoded.email) {
-      return res.status(403).send({ message: "Cấm truy cập" });
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: "Cấm truy cập" });
+      }
+      let admin = false;
+      if (user) {
+        admin = user?.role === "admin";
+      }
+      res.status(200).json({ admin });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-    let admin = false;
-    if (user) {
-      admin = user?.role === "admin";
-    }
-    res.status(200).json({ admin });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+  };
 
 //make admin
 const makeAdmin = async (req, res) => {
